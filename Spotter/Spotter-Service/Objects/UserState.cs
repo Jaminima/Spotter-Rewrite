@@ -8,9 +8,19 @@ namespace Spotter_Service.Objects
 {
     public class UserState
     {
+        public bool IsFirstPass = true;
+
         public User user;
 
         public CurrentlyPlayingContext playingContext;
+
+        public DateTime lastUpdate;
+
+        public async void UpdatePlaying()
+        {
+            playingContext = await user.GetSpotifyClient().Player.GetCurrentPlayback();
+            lastUpdate = DateTime.Now;
+        }
 
         public FullTrack playingTrack
         {
@@ -21,9 +31,7 @@ namespace Spotter_Service.Objects
         {
             user = new User(authToken);
 
-            var p = user.GetSpotifyClient().Player.GetCurrentPlayback();
-            p.Wait();
-            playingContext = p.Result;
+            UpdatePlaying();
         }
     }
 }
