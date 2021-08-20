@@ -10,17 +10,17 @@ namespace Spotter_Service
     {
         public static List<Objects.UserState> watchedUsers = new List<Objects.UserState>();
 
-        public static Action<Objects.UserState, CurrentlyPlayingContext> OnResume, OnPause, OnTrackChange, OnTrackSkip;
+        public static Action<Objects.UserState, CurrentlyPlayingContext> OnResume, OnPause, OnTrackChange, OnTrackSkip, OnNowPlayingLikedSongs, OnListenContextChange;
         public static Action<Objects.UserState, CurrentlyPlayingContext, int, int> OnTrackRewind, OnTrackFastForward;
 
-        private static async void CheckUser(Objects.UserState userState)
+        private static async void CheckUser(Objects.UserState lastUserState)
         {
-            CurrentlyPlayingContext currentlyPlaying = await userState.user.GetSpotifyClient().Player.GetCurrentPlayback();
+            CurrentlyPlayingContext currentlyPlaying = await lastUserState.user.GetSpotifyClient().Player.GetCurrentPlayback();
 
-            if (currentlyPlaying.IsPlaying != userState.playingContext.IsPlaying)
+            if (currentlyPlaying.IsPlaying != lastUserState.playingContext.IsPlaying)
             {
-                if (currentlyPlaying.IsPlaying) { if (OnResume != null) OnResume(userState, currentlyPlaying); }
-                else { if (OnPause != null) OnPause(userState, currentlyPlaying); }
+                if (currentlyPlaying.IsPlaying) { if (OnResume != null) OnResume(lastUserState, currentlyPlaying); }
+                else { if (OnPause != null) OnPause(lastUserState, currentlyPlaying); }
             }
 
             if (currentlyPlaying.Item == null)
@@ -34,24 +34,37 @@ namespace Spotter_Service
                 case ItemType.Track:
                     FullTrack playingTrack = (FullTrack)currentlyPlaying.Item;
 
-                    if (playingTrack.Id != userState.playingTrack.Id)
+                    if (playingTrack.Id != lastUserState.playingTrack.Id)
                     {
-                        if (OnTrackChange != null) OnTrackChange(userState, currentlyPlaying);
+                        if (OnTrackChange != null) OnTrackChange(lastUserState, currentlyPlaying);
 
-                        if (userState.playingContext.ProgressMs < userState.playingTrack.DurationMs * 0.9f)
+                        if (lastUserState.playingContext.ProgressMs < lastUserState.playingTrack.DurationMs * 0.9f)
                         {
-                            if (OnTrackSkip != null) OnTrackSkip(userState, currentlyPlaying);
+                            if (OnTrackSkip != null) OnTrackSkip(lastUserState, currentlyPlaying);
                         }
                     }
                     else
                     {
-                        if (userState.playingContext.ProgressMs > currentlyPlaying.ProgressMs)
+                        if (lastUserState.playingContext.ProgressMs > currentlyPlaying.ProgressMs)
                         {
-                            if (OnTrackRewind != null) OnTrackRewind(userState, currentlyPlaying, userState.playingContext.ProgressMs, currentlyPlaying.ProgressMs);
+                            if (OnTrackRewind != null) OnTrackRewind(lastUserState, currentlyPlaying, lastUserState.playingContext.ProgressMs, currentlyPlaying.ProgressMs);
                         }
-                        else if (currentlyPlaying.ProgressMs - userState.playingContext.ProgressMs > (DateTime.Now - userState.lastUpdate).TotalMilliseconds * 1.1f)
+                        else if (currentlyPlaying.ProgressMs - lastUserState.playingContext.ProgressMs > (DateTime.Now - lastUserState.lastUpdate).TotalMilliseconds * 1.1f)
                         {
-                            if (OnTrackFastForward != null) OnTrackFastForward(userState, currentlyPlaying, userState.playingContext.ProgressMs, currentlyPlaying.ProgressMs);
+                            if (OnTrackFastForward != null) OnTrackFastForward(lastUserState, currentlyPlaying, lastUserState.playingContext.ProgressMs, currentlyPlaying.ProgressMs);
+                        }
+                    }
+
+                    if (currentlyPlaying.Context==null && lastUserState.playingContext.Context!=null)
+                    {
+                        if (OnNowPlayingLikedSongs != null) OnNowPlayingLikedSongs(lastUserState, currentlyPlaying);
+                    }
+
+                    if (currentlyPlaying.Context!=null)
+                    {
+                        if (lastUserState.playingContext.Context == null || currentlyPlaying.Context.Uri!=lastUserState.playingContext.Context.Uri)
+                        {
+                            if (OnListenContextChange != null) OnListenContextChange(lastUserState, currentlyPlaying);
                         }
                     }
 
@@ -61,7 +74,7 @@ namespace Spotter_Service
                     throw new Exception("Unkown Item Type");
             }
 
-            userState.UpdatePlaying(currentlyPlaying);
+            lastUserState.UpdatePlaying(currentlyPlaying);
         }
 
         public static void CheckState()

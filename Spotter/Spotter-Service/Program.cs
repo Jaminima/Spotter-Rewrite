@@ -11,6 +11,9 @@ namespace Spotter_Service
 
             StateChecker.OnTrackSkip = (userState, currentPlaying) => { Console.WriteLine($"Skipped {userState.playingTrack.Name}"); };
 
+            StateChecker.OnNowPlayingLikedSongs = (userState, currentPlaying) => { Console.WriteLine($"Playing From Liked Songs"); };
+            StateChecker.OnListenContextChange = (userState, currentPlaying) => { Console.WriteLine($"Playing From A {currentPlaying.Context.Type}"); };
+
             StateChecker.watchedUsers.Add(us);
 
             while (true)
