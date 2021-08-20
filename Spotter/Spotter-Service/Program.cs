@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System;
 
 namespace Spotter_Service
 {
@@ -6,7 +7,9 @@ namespace Spotter_Service
     {
         static void Main(string[] args)
         {
-            Objects.UserState us = new Objects.UserState("BQDPBsr5ZahdFcaogV9F7wui-YmRQJbeWIYK1xDl4SmNEy1YSZFaN7bY6Pr2_I0qqM1y2JJbYd3irpd7REOSYnuc2tPeQsNSt07f-4vH3Z92tY-ARYBkZUnKghLcXmQl-05aJ_QOMZSaFy8cn0vucJB057NmY80tQM5AZuDmP-gl17qx3MOlVBoJegVySZYMPCn9g95BFjsHaRayCZ25fGZP729cOEbuc6l5DSU17UJs_D3KVa5iObHuXvuyjEH_oXA");
+            Objects.UserState us = new Objects.UserState("BQBKiUMCFWW5dtBsVkyHH9CqVBFjGXMXQHcJczd6-9f8PowLZPoWv9eIVb-5-7i7mKsWLNul4Pn5058IKzo_7hz5W01Eqbq1F5J4Tj3buX5nwYUHM6fdzJDfejJQtdoHBo1zEjJmR4_vgTdU_jjEPt3vdh4u2NwLO66xbAA8vTEgh-pnuX0vVZ9V2PkjWnW6xSN1iCAYnSm5a8GGneuURHJrL5xsRjK8cypOWXSRe9nV6v-hDvOI-14CrSy_oxa_K_E");
+
+            StateChecker.OnTrackSkip = (userState, currentPlaying) => { Console.WriteLine($"Skipped {userState.playingTrack.Name}"); };
 
             StateChecker.watchedUsers.Add(us);
 

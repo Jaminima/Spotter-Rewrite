@@ -22,6 +22,13 @@ namespace Spotter_Service.Objects
             lastUpdate = DateTime.Now;
         }
 
+
+        public async void UpdatePlaying(CurrentlyPlayingContext playContext)
+        {
+            playingContext = playContext;
+            lastUpdate = DateTime.Now;
+        }
+
         public FullTrack playingTrack
         {
             get { return (FullTrack)playingContext.Item; }

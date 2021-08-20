@@ -10,14 +10,23 @@ namespace Spotter_Service
     {
         public static List<Objects.UserState> watchedUsers = new List<Objects.UserState>();
 
+        public static Action<Objects.UserState, CurrentlyPlayingContext> OnResume, OnPause, OnTrackChange, OnTrackSkip;
+        public static Action<Objects.UserState, CurrentlyPlayingContext, int, int> OnTrackRewind, OnTrackFastForward;
+
         private static async void CheckUser(Objects.UserState userState)
         {
             CurrentlyPlayingContext currentlyPlaying = await userState.user.GetSpotifyClient().Player.GetCurrentPlayback();
 
             if (currentlyPlaying.IsPlaying != userState.playingContext.IsPlaying)
             {
-                if (currentlyPlaying.IsPlaying) Console.WriteLine("Resumed Playback");
-                else Console.WriteLine("Paused Playback");
+                if (currentlyPlaying.IsPlaying) { if (OnResume != null) OnResume(userState, currentlyPlaying); }
+                else { if (OnPause != null) OnPause(userState, currentlyPlaying); }
+            }
+
+            if (currentlyPlaying.Item == null)
+            {
+                Console.WriteLine("Unkown Item");
+                return;
             }
 
             switch (currentlyPlaying.Item.Type)
@@ -27,22 +36,22 @@ namespace Spotter_Service
 
                     if (playingTrack.Id != userState.playingTrack.Id)
                     {
-                        Console.WriteLine($"Playing {playingTrack.Name}, Was Hearing {userState.playingTrack.Name}");
+                        if (OnTrackChange != null) OnTrackChange(userState, currentlyPlaying);
 
                         if (userState.playingContext.ProgressMs < userState.playingTrack.DurationMs * 0.9f)
                         {
-                            Console.WriteLine($"{userState.playingTrack.Name} Was Skipped");
+                            if (OnTrackSkip != null) OnTrackSkip(userState, currentlyPlaying);
                         }
                     }
                     else
                     {
                         if (userState.playingContext.ProgressMs > currentlyPlaying.ProgressMs)
                         {
-                            Console.WriteLine($"Rewound From {userState.playingContext.ProgressMs / 1000}s to {currentlyPlaying.ProgressMs / 1000}s");
+                            if (OnTrackRewind != null) OnTrackRewind(userState, currentlyPlaying, userState.playingContext.ProgressMs, currentlyPlaying.ProgressMs);
                         }
                         else if (currentlyPlaying.ProgressMs - userState.playingContext.ProgressMs > (DateTime.Now - userState.lastUpdate).TotalMilliseconds * 1.1f)
                         {
-                            Console.WriteLine($"Jumped From {userState.playingContext.ProgressMs / 1000}s to {currentlyPlaying.ProgressMs / 1000}s");
+                            if (OnTrackFastForward != null) OnTrackFastForward(userState, currentlyPlaying, userState.playingContext.ProgressMs, currentlyPlaying.ProgressMs);
                         }
                     }
 
@@ -51,6 +60,8 @@ namespace Spotter_Service
                 default:
                     throw new Exception("Unkown Item Type");
             }
+
+            userState.UpdatePlaying(currentlyPlaying);
         }
 
         public static void CheckState()
@@ -60,13 +71,13 @@ namespace Spotter_Service
                 if (userState.IsFirstPass)
                 {
                     userState.IsFirstPass = false;
+                    userState.UpdatePlaying();
                 }
                 else
                 {
                     CheckUser(userState);
                 }
 
-                userState.UpdatePlaying();
             }
         }
     }
