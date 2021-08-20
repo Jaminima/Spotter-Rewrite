@@ -1,17 +1,12 @@
-﻿using System;
+﻿using SpotifyAPI.Web;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using SpotifyAPI.Web;
 
 namespace Spotter_Service
 {
     public static class StateChecker
     {
-        public static List<Objects.UserState> watchedUsers = new List<Objects.UserState>();
-
-        public static Action<Objects.UserState, CurrentlyPlayingContext> OnResume, OnPause, OnTrackChange, OnTrackSkip, OnNowPlayingLikedSongs, OnListenContextChange;
-        public static Action<Objects.UserState, CurrentlyPlayingContext, int, int> OnTrackRewind, OnTrackFastForward;
+        #region Methods
 
         private static async void CheckUser(Objects.UserState lastUserState)
         {
@@ -55,14 +50,14 @@ namespace Spotter_Service
                         }
                     }
 
-                    if (currentlyPlaying.Context==null && lastUserState.playingContext.Context!=null)
+                    if (currentlyPlaying.Context == null && lastUserState.playingContext.Context != null)
                     {
                         if (OnNowPlayingLikedSongs != null) OnNowPlayingLikedSongs(lastUserState, currentlyPlaying);
                     }
 
-                    if (currentlyPlaying.Context!=null)
+                    if (currentlyPlaying.Context != null)
                     {
-                        if (lastUserState.playingContext.Context == null || currentlyPlaying.Context.Uri!=lastUserState.playingContext.Context.Uri)
+                        if (lastUserState.playingContext.Context == null || currentlyPlaying.Context.Uri != lastUserState.playingContext.Context.Uri)
                         {
                             if (OnListenContextChange != null) OnListenContextChange(lastUserState, currentlyPlaying);
                         }
@@ -77,6 +72,16 @@ namespace Spotter_Service
             lastUserState.UpdatePlaying(currentlyPlaying);
         }
 
+        #endregion Methods
+
+        #region Fields
+
+        public static Action<Objects.UserState, CurrentlyPlayingContext> OnResume, OnPause, OnTrackChange, OnTrackSkip, OnNowPlayingLikedSongs, OnListenContextChange;
+        public static Action<Objects.UserState, CurrentlyPlayingContext, int, int> OnTrackRewind, OnTrackFastForward;
+        public static List<Objects.UserState> watchedUsers = new List<Objects.UserState>();
+
+        #endregion Fields
+
         public static void CheckState()
         {
             foreach (Objects.UserState userState in watchedUsers)
@@ -90,7 +95,6 @@ namespace Spotter_Service
                 {
                     CheckUser(userState);
                 }
-
             }
         }
     }

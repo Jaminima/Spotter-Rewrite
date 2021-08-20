@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Spotter_API.Controllers
 {
@@ -11,6 +10,8 @@ namespace Spotter_API.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
+        #region Fields
+
         private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -18,10 +19,18 @@ namespace Spotter_API.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
+        #endregion Fields
+
+        #region Constructors
+
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
             _logger = logger;
         }
+
+        #endregion Constructors
+
+        #region Methods
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
@@ -35,5 +44,7 @@ namespace Spotter_API.Controllers
             })
             .ToArray();
         }
+
+        #endregion Methods
     }
 }
