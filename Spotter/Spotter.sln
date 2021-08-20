@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotter-Service", "Spotter-Service\Spotter-Service.csproj", "{564B7220-B59F-44CD-9319-B86F2647D85A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spotter-API", "Spotter-API\Spotter-API.csproj", "{DE5B1A31-1F99-4EC4-AD67-E2528DF284BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{564B7220-B59F-44CD-9319-B86F2647D85A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{564B7220-B59F-44CD-9319-B86F2647D85A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{564B7220-B59F-44CD-9319-B86F2647D85A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{564B7220-B59F-44CD-9319-B86F2647D85A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE5B1A31-1F99-4EC4-AD67-E2528DF284BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE5B1A31-1F99-4EC4-AD67-E2528DF284BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE5B1A31-1F99-4EC4-AD67-E2528DF284BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE5B1A31-1F99-4EC4-AD67-E2528DF284BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB682A3C-5A12-4803-8609-965015AC1FEB}
+	EndGlobalSection
+EndGlobal
